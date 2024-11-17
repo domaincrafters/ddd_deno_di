@@ -1,0 +1,42 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  qa:
+    name: QA
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Install dependencies
+        run: deno install
+
+      - name: Deno check
+        run: deno check src/
+
+      - name: Deno lint
+        run: deno lint src
+
+      - name: Run unit tests
+        run: deno test --allow-all
+      
+      - name: Deno jsr check
+        run: deno publish --dry-run
+
+      - name: Build sonar report
+        env:
+          SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+        run: deno task sonar
+
+        
