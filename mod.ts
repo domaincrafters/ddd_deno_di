@@ -6,14 +6,16 @@
  */
 
 /**
- * @module DomainCrafters Standard Utilities
- *
- * This module serves as a centralized collection of standard utility functions and types
- * provided by the DomainCrafters library. It re-exports several essential components
- * from the `@domaincrafters/di` package, making them easily accessible for developers.
+ * @module DomainCrafters Dependency Injection
+ * This module provides a simple dependency injection library for Deno.
  */
-export * from "@domaincrafters/di/Optional.ts";
-export * from "@domaincrafters/di/Guard.ts";
-export * from "@domaincrafters/di/Exception.ts";
-export * from "@domaincrafters/di/UUID.ts";
-export * from "@domaincrafters/di/testing/asserts.ts";
+export { defaultServiceDisposer } from "@domaincrafters/di/ServiceProvider.ts";
+export { DIServiceProvider } from "@domaincrafters/di/DIServiceProvider.ts";
+export { DIServiceCollection } from "@domaincrafters/di/DIServiceCollection.ts";
+export { ServiceLifetime } from "@domaincrafters/di/ServiceProvider.ts";
+export { EmptyDIServiceProvider } from "@domaincrafters/di/EmptyDIServiceProvider.ts";
+export { EmptyDIServiceCollection } from "@domaincrafters/di/EmptyDIServiceCollection.ts";
+export type { ServiceCollection } from "@domaincrafters/di/ServiceCollection.ts";
+export type { ServiceProvider } from "@domaincrafters/di/ServiceProvider.ts";
+export type { Instance, ServiceBinding } from "@domaincrafters/di/ServiceProvider.ts";
+export type { ServiceDisposer, ServiceFactory } from "@domaincrafters/di/ServiceProvider.ts";
