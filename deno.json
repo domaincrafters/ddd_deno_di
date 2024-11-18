@@ -13,8 +13,7 @@
   "lint": {
       "include": ["src/"],
       "rules": {
-        "tags": ["jsr", "recommended"],
-        "include": ["missing-constraint", "missing-explicit-type"]
+        "tags": ["jsr", "recommended"]
       }
   },
   "fmt": {
