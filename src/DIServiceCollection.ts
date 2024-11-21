@@ -75,17 +75,17 @@ export class DIServiceCollection implements ServiceCollection {
     addTransient(
         key: string,
         serviceFactory: ServiceFactory,
-        serviceDisposer?: ServiceDisposer,
     ): ServiceCollection {
-        return this.addService(key, ServiceLifetime.Transient, serviceFactory, serviceDisposer);
+        return this.addService(key, ServiceLifetime.Transient, serviceFactory);
     }
 
     /**
-     * Adds a scoped service to the collection.
+     * Adds a scoped service of type Type to the collection.
      *
+     * @generic Type - The type of the service to add.
      * @param {string} key - The unique key representing the service.
      * @param {ServiceFactory} serviceFactory - The factory function to create the service instance.
-     * @param {ServiceDisposer} [serviceDisposer] - Optional disposer function to dispose the service instance.
+     * @param {ServiceDisposer<Type>} [serviceDisposer] - Optional disposer function to dispose the service instance.
      * @returns {ServiceCollection} The service collection for chaining.
      *
      * @example Usage
@@ -95,17 +95,18 @@ export class DIServiceCollection implements ServiceCollection {
      * });
      * ```
      */
-    addScoped(
+    addScoped<Type>(
         key: string,
         serviceFactory: ServiceFactory,
-        serviceDisposer?: ServiceDisposer,
+        serviceDisposer?: ServiceDisposer<Type>,
     ): ServiceCollection {
         return this.addService(key, ServiceLifetime.Scoped, serviceFactory, serviceDisposer);
     }
 
     /**
-     * Adds a singleton service to the collection.
+     * Adds a singleton service of type Type to the collection.
      *
+     * @generic Type - The type of the service to add.
      * @param {string} key - The unique key representing the service.
      * @param {ServiceFactory} serviceFactory - The factory function to create the service instance.
      * @param {ServiceDisposer} serviceDisposer - The disposer function to dispose the service instance.
@@ -120,10 +121,10 @@ export class DIServiceCollection implements ServiceCollection {
      * });
      * ```
      */
-    addSingleton(
+    addSingleton<Type>(
         key: string,
         serviceFactory: ServiceFactory,
-        serviceDisposer: ServiceDisposer,
+        serviceDisposer: ServiceDisposer<Type>,
     ): ServiceCollection {
         return this.addService(key, ServiceLifetime.Singleton, serviceFactory, serviceDisposer);
     }
@@ -195,11 +196,11 @@ export class DIServiceCollection implements ServiceCollection {
         return Optional.of<ServiceBinding>(binding);
     }
 
-    private addService(
+    private addService<Type>(
         key: string,
         serviceLifetime: ServiceLifetime,
         serviceFactory: ServiceFactory,
-        serviceDisposer?: ServiceDisposer,
+        serviceDisposer?: ServiceDisposer<Type>,
     ): ServiceCollection {
         this._serviceBindings.set(
             key,
@@ -208,18 +209,18 @@ export class DIServiceCollection implements ServiceCollection {
         return this;
     }
 
-    private createBinding(
+    private createBinding<Type>(
         serviceLifetime: ServiceLifetime,
         serviceFactory: ServiceFactory,
-        serviceDisposer?: ServiceDisposer,
+        serviceDisposer?: ServiceDisposer<Type>,
     ): ServiceBinding {
-        const activeServiceDisposer: ServiceDisposer = serviceDisposer ??
+        const activeServiceDisposer: ServiceDisposer<Type> = serviceDisposer ??
             defaultServiceDisposer;
 
         const binding: ServiceBinding = {
             serviceLifetime,
             serviceFactory,
-            serviceDisposer: activeServiceDisposer,
+            serviceDisposer: activeServiceDisposer as ServiceDisposer<unknown>,
         };
 
         return binding;

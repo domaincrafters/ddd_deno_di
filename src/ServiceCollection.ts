@@ -9,22 +9,21 @@ import type { ServiceBinding, ServiceDisposer, ServiceFactory } from '@domaincra
 import type { Optional } from '@domaincrafters/std';
 
 export interface ServiceCollection {
-    addScoped(
+    addScoped<Type>(
         key: string,
         serviceFactory: ServiceFactory,
-        serviceDisposer?: ServiceDisposer,
+        serviceDisposer?: ServiceDisposer<Type>,
     ): ServiceCollection;
 
-    addSingleton(
+    addSingleton<Type>(
         key: string,
         serviceFactory: ServiceFactory,
-        serviceDisposer?: ServiceDisposer,
+        serviceDisposer?: ServiceDisposer<Type>,
     ): ServiceCollection;
 
     addTransient(
         key: string,
         serviceFactory: ServiceFactory,
-        serviceDisposer?: ServiceDisposer,
     ): ServiceCollection;
 
     get scoped(): Map<string, ServiceBinding>;
