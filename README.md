@@ -34,8 +34,8 @@ The `ServiceProvider` manages the lifetimes of services and ensures that depende
 
 The **ServiceCollection** interface is used to register and configure services before they are instantiated. It allows you to:
 
-- **addSingleton(key, factory, disposer?)**: Register a singleton service.
-- **addScoped(key, factory, disposer?)**: Register a scoped service.
+- **addSingleton<Type>(key, factory, disposer?)**: Register a singleton service of a specific type.
+- **addScoped<Type>(key, factory, disposer?)**: Register a scoped service of specific type.
 - **addTransient(key, factory, disposer?)**: Register a transient service.
 - **find(key)**: Find a registered service binding by its key.
 

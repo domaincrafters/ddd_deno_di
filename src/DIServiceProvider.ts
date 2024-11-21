@@ -117,7 +117,6 @@ export class DIServiceProvider implements ServiceProvider {
 
         const disposableInstances: Map<string, Instance> = this._instances;
         const serviceCollection: ServiceCollection = this._serviceCollection;
-
         this._isDisposed = true;
         this._rootServiceProvider = EmptyDIServiceProvider.instance();
         this._serviceCollection = EmptyDIServiceCollection.instance();
@@ -125,7 +124,6 @@ export class DIServiceProvider implements ServiceProvider {
 
         for (const [key, instance] of disposableInstances) {
             const serviceBindingOptional: Optional<ServiceBinding> = serviceCollection.find(key);
-
             if (serviceBindingOptional.isPresent) {
                 await this.disposeService(serviceBindingOptional.value, instance);
             }

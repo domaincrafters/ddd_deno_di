@@ -8,6 +8,10 @@
 import { DIServiceCollection, ServiceFactory, ServiceDisposer, ServiceProvider } from '@domaincrafters/di/mod.ts';
 import { assert, assertEquals } from '@std/assert';
 
+class ConfigService {
+    config: string = 'value';
+}
+
 Deno.test('DIServiceCollection - addSingleton adds a singleton service', () => {
     // Arrange
     const serviceCollection = DIServiceCollection.create();
@@ -15,7 +19,8 @@ Deno.test('DIServiceCollection - addSingleton adds a singleton service', () => {
     const createCallback: ServiceFactory = async (_provider) => ({
         config: 'value',
     });
-    const serviceDisposer: ServiceDisposer = async (_provider) => {};
+    const serviceDisposer: ServiceDisposer<ConfigService> = 
+        async (_service: ConfigService, _provider) => {};
 
     // Act
     serviceCollection.addSingleton(serviceKey, createCallback, serviceDisposer);
@@ -55,7 +60,7 @@ Deno.test('DIServiceCollection - addScoped adds a scoped service', () => {
     const createCallback: ServiceFactory = async (_provider) => ({
         user: 'John Doe',
     });
-    const serviceDisposer: ServiceDisposer = async (_provider) => {};
+    const serviceDisposer: ServiceDisposer<ServiceProvider> = async (_configService, _provider) => {};
 
     // Act
     serviceCollection.addScoped(serviceKey, createCallback, serviceDisposer);
@@ -189,17 +194,15 @@ Deno.test('DIServiceCollection - addTransient adds a transient service', () => {
     const createCallback: ServiceFactory = async (_provider) => ({
         log: () => {},
     });
-    const serviceDisposer: ServiceDisposer = async (_provider) => {};
 
     // Act
-    serviceCollection.addTransient(serviceKey, createCallback, serviceDisposer);
+    serviceCollection.addTransient(serviceKey, createCallback);
 
     // Assert
     assert(serviceCollection.transient.has(serviceKey));
     const binding = serviceCollection.transient.get(serviceKey);
     assert(binding !== undefined);
     assertEquals(binding?.serviceFactory, createCallback);
-    assertEquals(binding?.serviceDisposer, serviceDisposer);
 });
 
 Deno.test('DIServiceCollection - overwrite existing singleton service on duplicate key', () => {

@@ -25,23 +25,21 @@ export enum ServiceLifetime {
 }
 
 /**
- * Represents a binding of a service, including its lifetime, factory, and optional disposer.
+ * Represents a binding of a service, including its lifetime, factory, and optional service disposer.
  *
  * @example Usage
  * ```typescript
  * const binding: ServiceBinding = {
  *   serviceLifetime: ServiceLifetime.Singleton,
  *   serviceFactory: async (provider) => new ConfigService(),
- *   serviceDisposer: async (instance, provider) => {
- *     // Dispose logic
- *   }
+ *   serviceDisposer: async (instance: unknown, provider) => // dispose logic on instance
  * };
  * ```
  */
 export interface ServiceBinding {
     serviceLifetime: ServiceLifetime;
     serviceFactory: ServiceFactory;
-    serviceDisposer?: ServiceDisposer;
+    serviceDisposer?: ServiceDisposer<unknown>;
 }
 
 /**
@@ -137,7 +135,7 @@ export type ServiceFactory = (
 /**
  * Represents a disposer function that disposes a service instance.
  *
- * @param {Instance} instance - The service instance to dispose.
+ * @param {Type} type - The service instance wuth the type of the service.
  * @param {ServiceProvider} serviceProvider - The service provider.
  * @returns {Promise<void>} A promise that resolves when disposal is complete.
  *
@@ -148,8 +146,8 @@ export type ServiceFactory = (
  * };
  * ```
  */
-export type ServiceDisposer = (
-    instance: Instance,
+export type ServiceDisposer<Type> = (
+    service: Type,
     serviceProvider: ServiceProvider,
 ) => Promise<void>;
 
@@ -161,7 +159,7 @@ export type ServiceDisposer = (
  * // Used internally when no disposer is provided.
  * ```
  */
-export const defaultServiceDisposer: ServiceDisposer = async (
-    _instance: Instance,
+export const defaultServiceDisposer: ServiceDisposer<unknown> = async (
+    _instance: unknown,
     _serviceProvider: ServiceProvider,
 ): Promise<void> => {};

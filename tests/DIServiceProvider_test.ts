@@ -170,29 +170,6 @@ Deno.test('DIServiceProvider - transient service returns new instance each time'
     assertEquals(instanceCount, 2);
 });
 
-Deno.test('DIServiceProvider - serviceDisposer disposes current scope instances', async () => {
-    // Arrange
-    const serviceCollection = DIServiceCollection.create();
-    const serviceKey = 'userService';
-    let instanceCount = 0;
-    const serviceFactory: ServiceFactory = async (_provider) => {
-        instanceCount++;
-        return { user: 'John Doe' + instanceCount };
-    };
-
-    serviceCollection.addScoped(serviceKey, serviceFactory);
-    const rootProvider = DIServiceProvider.create(serviceCollection);
-    const scopeProvider = rootProvider.createScope();
-    await scopeProvider.getService<UserService>(serviceKey);
-
-    // Act
-    scopeProvider.dispose();
-
-    // Assert
-    assertRejects(async () => await scopeProvider.getService<UserService>(serviceKey));
-    assertEquals(instanceCount, 1);
-});
-
 Deno.test('DIServiceProvider - non root serviceProvider cannot dispose singleton instances', async () => {
     // Arrange
     const serviceCollection = DIServiceCollection.create();
@@ -337,4 +314,49 @@ Deno.test('DIServiceProvider - throws when finding a service on a disposed provi
 
     // Act & Assert
     assertRejects(() => serviceProvider.getService<UserService>(serviceKey));
+});
+
+Deno.test('DIServiceProvider - scoped provider executes service disposer when disposing', async () => {
+    // Arrange
+    const serviceCollection = DIServiceCollection.create();
+    const configService: ConfigService = { config: 1 };
+
+    const configServiceFactory: ServiceFactory = async (_provider) => configService;
+    let disposerCalled = false;
+    const configServiceDisposer = async (_instance: ConfigService, _provider: ServiceProvider) => {
+        disposerCalled = true;
+        _instance.config = 0;
+    };
+
+    serviceCollection.addScoped('configService', configServiceFactory, configServiceDisposer);
+    const rootProvider = DIServiceProvider.create(serviceCollection);
+    const scopeProvider = rootProvider.createScope();
+    await scopeProvider.getService<ConfigService>('configService');
+
+    // Act
+    await scopeProvider.dispose();
+
+    // Assert
+    assertEquals(configService.config, 0);
+    assert(disposerCalled);
+    assertRejects(async () => await scopeProvider.getService<ConfigService>('configService'));
+});
+
+Deno.test('DIServiceProvider -  scoped provider executes default disposer when disposing', async () => {
+    // Arrange
+    const serviceCollection = DIServiceCollection.create();
+    const configService: ConfigService = { config: 1 };
+
+    const configServiceFactory: ServiceFactory = async (_provider) => configService;
+    serviceCollection.addScoped('configService', configServiceFactory);
+    const rootProvider = DIServiceProvider.create(serviceCollection);
+    const scopeProvider = rootProvider.createScope();
+    await scopeProvider.getService<ConfigService>('configService');
+
+    // Act
+    await scopeProvider.dispose();
+
+    // Assert
+    assertEquals(configService.config, 1);
+    assertRejects(async () => await scopeProvider.getService<ConfigService>('configService'));
 });

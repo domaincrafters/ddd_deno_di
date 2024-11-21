@@ -53,10 +53,10 @@ export class EmptyDIServiceCollection implements ServiceCollection {
      * }
      * ```
      */
-    addScoped(
+    addScoped<Type>(
         _name: string,
         _serviceFactory: ServiceFactory,
-        _serviceDisposer?: ServiceDisposer,
+        _serviceDisposer?: ServiceDisposer<Type>,
     ): ServiceCollection {
         return this.addService();
     }
@@ -75,10 +75,10 @@ export class EmptyDIServiceCollection implements ServiceCollection {
      * }
      * ```
      */
-    addSingleton(
+    addSingleton<Type>(
         _name: string,
         _serviceFactory: ServiceFactory,
-        _serviceDisposer?: ServiceDisposer,
+        _serviceDisposer?: ServiceDisposer<Type>,
     ): ServiceCollection {
         return this.addService();
     }
@@ -100,7 +100,6 @@ export class EmptyDIServiceCollection implements ServiceCollection {
     addTransient(
         _name: string,
         _serviceFactory: ServiceFactory,
-        _serviceDisposer?: ServiceDisposer,
     ): ServiceCollection {
         return this.addService();
     }
